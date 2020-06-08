@@ -1,14 +1,23 @@
 import { Request, Response } from "express";
 import { inspect } from 'util';
-import db from "./db";
+import { Posts, Communities } from "./db";
 
 export let allPosts = (req: Request, resp: Response) => {
-    let posts = db.find((err, posts) => {
+    Posts.find({}).toArray((err, docs) => {
         if (err) {
-            resp.send("error");
+            console.log(err.message);
         } else {
-            console.log(inspect(posts));
-            resp.send(posts);
+            resp.send(docs);
         }
-    });
+    })
+};
+
+export let allCommunities = (req: Request, resp: Response) => {
+    Communities.find({}).toArray((err, docs) => {
+        if (err) {
+            console.log(err.message);
+        } else {
+            resp.send(docs);
+        }
+    })
 };

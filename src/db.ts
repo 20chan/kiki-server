@@ -1,12 +1,19 @@
-import * as mongoose from "mongoose";
+import * as mongodb from "mongodb";
 
-import ObjectId = mongoose.Schema.Types.ObjectId;
+type ObjectID = mongodb.ObjectID;
 
-mongoose.connect("mongodb://127.0.0.1:27017/KiKiDB", (err) => {
+let db: mongodb.Db;
+let Posts: mongodb.Collection<Post>;
+let Communities: mongodb.Collection<Community>;
+
+mongodb.MongoClient.connect("mongodb://127.0.0.1:27017/", (err, client) => {
     if (err) {
         console.log(err.message);
     } else {
-        console.log("mongodb connected");
+        console.log("db connected");
+        db = client.db("KiKiDB");
+        Posts = db.collection("Posts");
+        Communities = db.collection("Communities");
     }
 });
 
@@ -18,8 +25,8 @@ class Comment {
     SubComments: Comment[];
 }
 
-export interface IPost extends mongoose.Document {
-    Community: ObjectId;
+class Post {
+    Community: ObjectID;
     ScrappedDate: Date;
 
     Url: string;
@@ -34,30 +41,10 @@ export interface IPost extends mongoose.Document {
     Comments: Comment[];
 }
 
-export const CommentSchema = new mongoose.Schema({
-    Deleted: Boolean,
-    author: String,
-    WrittenDate: Date,
-    Content: String,
-})
+class Community {
+    Name: string;
+}
 
-CommentSchema.add({ SubComments: [CommentSchema] });
 
-export const PostSchema = new mongoose.Schema({
-    Community: ObjectId,
-    ScrappedDate: Date,
-
-    Url: String,
-    PostId: String,
-    Title: String,
-    Author: String,
-    WrittenDate: Date,
-    Content: String,
-
-    Views: Number,
-    CommentCount: Number,
-    Comments: [CommentSchema],
-});
-
-const Post = mongoose.model<IPost>("Post", PostSchema, "Posts");
-export default Post;
+export default db;
+export { Posts, Communities };

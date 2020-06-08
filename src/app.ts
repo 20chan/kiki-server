@@ -13,6 +13,7 @@ app.get("/", (req, resp) => {
 });
 
 app.get("/posts", dbController.allPosts);
+app.get("/communities", dbController.allCommunities);
 
 const server = app.listen(app.get("port"), () => {
     console.log("running on http://localhost:%d", app.get("port"));
